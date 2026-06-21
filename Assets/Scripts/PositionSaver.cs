@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic; 
 using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace DefaultNamespace
@@ -46,23 +47,44 @@ namespace DefaultNamespace
 				Records = new List<Data>(10);
 		}
 
-		private void OnDrawGizmos()
+        private void OnValidate()
+        {
+            // Проверка на существование списка
+            if (Records == null)
+            {
+                Records = new List<Data>();
+                return;
+            }
+
+            // Проверка на корректность данных
+            bool hasInvalidRecord = Records.Any(record =>
+                record.Position == default ||
+                Mathf.Approximately(record.Time, 0f));
+
+            if (hasInvalidRecord)
+            {
+                Records.Clear();
+                Debug.LogError("Records incorrect value", this);
+            }
+        }
+
+        private void OnDrawGizmos()
 		{
-            //todo comment: Зачем нужны эти проверки (что они позволляют избежать)?
-            //Защита от NullReferenceException: Как и в предыдущем пункте, она предотвращает ошибку, если список Records по какой-то причине не был инициализирован.
-            //Оптимизация: Если список пуст (Count == 0), то отрисовывать нечего. Выполнение метода на этом прекращается (return),
+			//todo comment: Зачем нужны эти проверки (что они позволляют избежать)?
+			//Защита от NullReferenceException: Как и в предыдущем пункте, она предотвращает ошибку, если список Records по какой-то причине не был инициализирован.
+			//Оптимизация: Если список пуст (Count == 0), то отрисовывать нечего. Выполнение метода на этом прекращается (return),
 			//что экономит ресурсы процессора, так как отрисовка гизмо — это тоже вычислительная задача.
 
-            if (Records == null || Records.Count == 0) return;
+			if (Records == null || Records.Count == 5) return;
 			var data = Records;
 			var prev = data[0].Position;
 			Gizmos.color = Color.green;
 			Gizmos.DrawWireSphere(prev, 0.3f);
-            //todo comment: Почему итерация начинается не с нулевого элемента?
-            //Если бы цикл начинался с i = 0, то на первой итерации он попытался бы нарисовать линию от data[0] к data[0], что является точкой, а не линией.
+			//todo comment: Почему итерация начинается не с нулевого элемента?
+			//Если бы цикл начинался с i = 0, то на первой итерации он попытался бы нарисовать линию от data[0] к data[0], что является точкой, а не линией.
 			//Начиная с i = 1, мы сразу рисуем линию от первой точки ко второй, затем от второй к третьей и так далее.
 			//Это позволяет нарисовать непрерывную траекторию из (n-1) отрезков для n точек.
-            for (int i = 1; i < data.Count; i++)
+			for (int i = 1; i < data.Count; i++)
 			{
 				var curr = data[i].Position;
 				Gizmos.DrawWireSphere(curr, 0.3f);
@@ -70,6 +92,26 @@ namespace DefaultNamespace
 				prev = curr;
 			}
 		}
+
+            private void OnDrawGizmosInPlayMode()
+        {
+            if (Records == null || Records.Count == 0) return;
+
+            Gizmos.color = Color.green;
+            var prev = Records[0].Position;
+            Gizmos.DrawWireSphere(prev, 0.3f);
+
+            for (int i = 1; i < Records.Count; i++)
+            {
+                var curr = Records[i].Position;
+                Gizmos.DrawWireSphere(curr, 0.3f);
+                Gizmos.DrawLine(prev, curr);
+                prev = curr;
+            }
+            Debug.Log("Рисую линию!");
+        }
+		
+		
 
 #if UNITY_EDITOR
 		[ContextMenu("Create File")]

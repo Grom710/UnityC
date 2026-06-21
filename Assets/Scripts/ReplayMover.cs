@@ -22,7 +22,7 @@ namespace DefaultNamespace
             ///Если список Records пуст, то двигаться объекту некуда, и выполнение скрипта не имеет смысла.
             if (!TryGetComponent(out _save) || _save.Records == null || _save.Records.Count < 2)
             {
-				Debug.LogError("Records incorrect value", this);
+				
                 //todo comment: Для чего выключается этот компонент?
                 //Предотвратить возможные ошибки, например, IndexOutOfRangeException,
                 //которые возникли бы при попытке доступа к несуществующим элементам в пустом списке Records.
