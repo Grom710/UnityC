@@ -75,7 +75,7 @@ namespace DefaultNamespace
 			//Оптимизация: Если список пуст (Count == 0), то отрисовывать нечего. Выполнение метода на этом прекращается (return),
 			//что экономит ресурсы процессора, так как отрисовка гизмо — это тоже вычислительная задача.
 
-			if (Records == null || Records.Count == 5) return;
+			if (Records == null || Records.Count == 0) return;
 			var data = Records;
 			var prev = data[0].Position;
 			Gizmos.color = Color.green;
