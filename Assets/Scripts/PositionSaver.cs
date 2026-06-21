@@ -11,11 +11,13 @@ namespace DefaultNamespace
 		{
 			public Vector3 Position;
 			public float Time;
-		}
+        }
+        [SerializeField]
+        private TextAsset _json;
 
-		private TextAsset _json;
-
-		public List<Data> Records { get; private set; }
+        [SerializeField]
+        [HideInInspector]
+        public List<Data> Records { get; private set; }
 
 		private void Awake()
 		{
