@@ -22,8 +22,17 @@ namespace DefaultNamespace
 			//Вызывать её каждый кадр в методе Update() крайне неэффективно,
 			//так как компонент PositionSaver прикреплён к тому же игровому объекту(gameObject) и никуда не исчезает после начала игры.
             _save = GetComponent<PositionSaver>();
-			_save.Records.Clear();
-		}
+            if (_duration <= _delay)
+            {
+                _duration = _delay * 5;
+                Debug.LogWarning(
+                    $"Продолжительность увеличена до {_duration:F2}s," +
+                    $" так как она была меньше интервала съемки.",
+                    this);
+            }
+            _save.Records.Clear();
+            _currentDelay = _delay;
+        }
 
 		private void Update()
 		{
