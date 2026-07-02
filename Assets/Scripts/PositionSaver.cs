@@ -8,19 +8,20 @@ namespace DefaultNamespace
 {
 	public class PositionSaver : MonoBehaviour
 	{
-		public struct Data
+        [SerializeField]
+        public struct Data
 		{
 			public Vector3 Position;
 			public float Time;
         }
-        [SerializeField]
+        
         private TextAsset _json;
 
         [SerializeField]
         [HideInInspector]
-        public List<Data> Records { get; private set; }
+        private List<Data> Records;
 
-		private void Awake()
+        private void Awake()
 		{
             //todo comment: Что будет, если в теле этого условия не сделать выход из метода? 
             //Если убрать оператор return;, то после вывода ошибки и отключения объекта (gameObject.SetActive(false)) выполнение метода Awake() продолжится.
@@ -35,14 +36,14 @@ namespace DefaultNamespace
 				Debug.LogError("Please, create TextAsset and add in field _json");
 				return;
 			}
-			
-			JsonUtility.FromJsonOverwrite(_json.text, this);
+
+            Records = JsonUtility.FromJson<PositionSaver>(_json.text)?.Records;
             //todo comment: Для чего нужна эта проверка (что она позволяет избежать)? 
             //Эта проверка служит для обеспечения отказоустойчивости (defensive programming).
             //JsonUtility.FromJsonOverwrite заполняет существующие поля объекта данными из JSON.
             //Если поле Records в JSON-файле имеет значение null или поле отсутствует, то после десериализации переменная Records в скрипте останется null.
             //Если не сделать эту проверку, то при попытке обратиться к Records возникнет ошибка NullReferenceException.
-			//Эта строка кода гарантирует, что у объекта всегда будет корректный, пусть и пустой, список для работы, что позволяет избежать краха программы.
+            //Эта строка кода гарантирует, что у объекта всегда будет корректный, пусть и пустой, список для работы, что позволяет избежать краха программы.
             if (Records == null)
 				Records = new List<Data>(10);
 		}
@@ -93,25 +94,6 @@ namespace DefaultNamespace
 			}
 		}
 
-            private void OnDrawGizmosInPlayMode()
-        {
-            if (Records == null || Records.Count == 0) return;
-
-            Gizmos.color = Color.green;
-            var prev = Records[0].Position;
-            Gizmos.DrawWireSphere(prev, 0.3f);
-
-            for (int i = 1; i < Records.Count; i++)
-            {
-                var curr = Records[i].Position;
-                Gizmos.DrawWireSphere(curr, 0.3f);
-                Gizmos.DrawLine(prev, curr);
-                prev = curr;
-            }
-            Debug.Log("Рисую линию!");
-        }
-		
-		
 
 #if UNITY_EDITOR
 		[ContextMenu("Create File")]
@@ -171,10 +153,8 @@ namespace DefaultNamespace
 
             try
             {
-                var wrapper = new Wrapper { dataList = Records };
-                
-                string json = JsonUtility.ToJson(wrapper, true);
-                
+                string json = JsonUtility.ToJson(this, true);
+
                 File.WriteAllText(UnityEditor.AssetDatabase.GetAssetPath(_json), json);
                 
                 UnityEditor.AssetDatabase.SaveAssets();
