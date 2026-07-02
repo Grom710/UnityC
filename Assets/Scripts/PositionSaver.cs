@@ -8,18 +8,21 @@ namespace DefaultNamespace
 {
 	public class PositionSaver : MonoBehaviour
 	{
-        [SerializeField]
+
         public struct Data
 		{
 			public Vector3 Position;
 			public float Time;
         }
-        
+
+        [SerializeField]
+        [Tooltip("Файл для записи и загрузки траектории. Используйте контекстное меню Create File.")]
+        [NoEdit]
         private TextAsset _json;
 
         [SerializeField]
         [HideInInspector]
-        private List<Data> Records;
+        public List<Data> Records;
 
         private void Awake()
 		{

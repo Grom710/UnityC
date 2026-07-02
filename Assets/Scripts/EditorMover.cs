@@ -10,12 +10,19 @@ namespace DefaultNamespace
 		private float _currentDelay;
 
         //todo comment: Что произойдёт, если _delay > _duration?
-		//Если значение задержки записи (_delay) будет больше общей продолжительности работы скрипта
-		//(_duration), то в список Records не будет добавлено ни одной записи.
+        //Если значение задержки записи (_delay) будет больше общей продолжительности работы скрипта
+        //(_duration), то в список Records не будет добавлено ни одной записи.
+        [SerializeField]
+        [Tooltip("Интервал между кадрами (секунды).")]
+        [Range(0.2f, 1.0f)]
         private float _delay = 0.5f;
-		private float _duration = 5f;
 
-		private void Start()
+        [SerializeField]
+        [Tooltip("Общая длина анимации (секунды).")]
+        [Min(0.2f)]
+        private float _duration = 5f;
+
+        private void Start()
 		{
             //todo comment: Почему этот поиск производится здесь, а не в начале метода Update?
             //Поиск компонентов с помощью GetComponent<T>() — это ресурсоёмкая операция.
