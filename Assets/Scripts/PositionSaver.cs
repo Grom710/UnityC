@@ -40,7 +40,7 @@ namespace DefaultNamespace
 				return;
 			}
 
-            Records = JsonUtility.FromJson<PositionSaver>(_json.text)?.Records;
+            JsonUtility.FromJsonOverwrite(_json.text, this);
             //todo comment: Для чего нужна эта проверка (что она позволяет избежать)? 
             //Эта проверка служит для обеспечения отказоустойчивости (defensive programming).
             //JsonUtility.FromJsonOverwrite заполняет существующие поля объекта данными из JSON.
